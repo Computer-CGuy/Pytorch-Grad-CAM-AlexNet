@@ -40,11 +40,13 @@ class ModelOutputs():
         self.feature_extractor = FeatureExtractor(self.feature_module, target_layers)
 
     def get_gradients(self):
+        # print(self.feature_extractor.gradients)
         return self.feature_extractor.gradients
 
     def __call__(self, x):
         target_activations = []
         for name, module in self.model._modules.items():
+            # print(name,module)
             if module == self.feature_module:
                 target_activations, x = self.feature_extractor(x)
             elif "avgpool" in name.lower():
@@ -114,6 +116,7 @@ class GradCam:
         self.feature_module.zero_grad()
         self.model.zero_grad()
         one_hot.backward(retain_graph=True)
+        # print(self.extractor.get_gradients())
 
         grads_val = self.extractor.get_gradients()[-1].cpu().data.numpy()
 
@@ -241,14 +244,14 @@ if __name__ == '__main__':
     # Can work with any model, but it assumes that the model has a
     # feature method, and a classifier method,
     # as in the VGG models in torchvision.
-    model = models.resnet50(pretrained=True)
-    grad_cam = GradCam(model=model, feature_module=model.layer4, \
-                       target_layer_names=["2"], use_cuda=args.use_cuda)
+    model = models.alexnet(pretrained=True)
+    grad_cam = GradCam(model=model, feature_module=model.features, \
+                       target_layer_names=["10"], use_cuda=args.use_cuda)
 
     img = cv2.imread(args.image_path, 1)
-    img = np.float32(cv2.resize(img, (224, 224))) / 255
+    img = np.float32(cv2.resize(img, (256, 256))) / 255
     input = preprocess_image(img)
-
+    # input = preprocessed_img.requires_grad_(True)
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested index.
     target_index = None
@@ -257,7 +260,7 @@ if __name__ == '__main__':
     show_cam_on_image(img, mask)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
-    print(model._modules.items())
+    # print(model._modules.items())
     gb = gb_model(input, index=target_index)
     gb = gb.transpose((1, 2, 0))
     cam_mask = cv2.merge([mask, mask, mask])
