@@ -1,3 +1,5 @@
+### Forked from https://github.com/jacobgil/pytorch-grad-cam . All the credit goes to him.
+
 ## Grad-CAM implementation in Pytorch ##
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
@@ -12,7 +14,7 @@ See the paper: https://arxiv.org/pdf/1610.02391v1.pdf
 
 The paper authors torch implementation: https://github.com/ramprs/grad-cam
 
-My Keras implementation: https://github.com/jacobgil/keras-grad-cam
+jacobgil Keras implementation: https://github.com/jacobgil/keras-grad-cam
 
 
 ----------
